@@ -55,13 +55,13 @@ resource "aviatrix_spoke_transit_attachment" "transit_gw_egress" {
   route_tables    = var.transit_gw_egress_route_tables
 }
 
-# resource "aviatrix_segmentation_security_domain_association" "default" {
-#   count                = var.attached ? (length(var.security_domain) > 0 ? 1 : 0) : 0 #Only create resource when attached and security_domain is set.
-#   transit_gateway_name = var.transit_gw
-#   security_domain_name = var.security_domain
-#   attachment_name      = aviatrix_spoke_gateway.default.gw_name
-#   depends_on           = [aviatrix_spoke_transit_attachment.default] #Let's make sure this cannot create a race condition
-# }
+resource "aviatrix_segmentation_security_domain_association" "default" {
+  count                = var.attached ? (length(var.security_domain) > 0 ? 1 : 0) : 0 #Only create resource when attached and security_domain is set.
+  transit_gateway_name = var.transit_gw
+  security_domain_name = var.security_domain
+  attachment_name      = aviatrix_spoke_gateway.default.gw_name
+  depends_on           = [aviatrix_spoke_transit_attachment.default] #Let's make sure this cannot create a race condition
+}
 
 resource "aviatrix_transit_firenet_policy" "default" {
   count                        = var.inspection ? (var.attached ? 1 : 0) : 0
